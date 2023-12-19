@@ -13,6 +13,7 @@
 \usepackage{authblk}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{xcolor} % added by Shawn
 
 \DeclareGraphicsExtensions{.pdf,.png,.jpg,.eps}
 \usepackage{mathtools}
@@ -1123,56 +1124,192 @@ To numerically solve these equations, it is necessary to use a finite domain. So
 height $H$ then $x\in\{-W/2 + h, -W/2 + 2h, \dotsc, W/2-2h, W/2-h\}$ and $z\in\{-h,-2h,\dotsc,2h-H,h-H\}$. At the upper
 boundary $u_z(x,0,t) = 0$. The other boundary conditions and initial condition will be chosen to best represent the model's
 assumptions. After making such choices, we can use the MATLAB command \texttt{ode23} to solve for $u$ at each grid point in
-parallel (see the attached MATLAB code).
+parallel (see the attached MATLAB code?).
 
 \subsection{Manufactured Love Waves}
+\label{sec:numerical_manufactured}
 
 We can manufacture Love waves by using the initial condition
 \[
-	u(x,z,0) \sim \cos(kx)
+	u(x,z,0) = A\cos(kx)
 	\begin{cases}
-		\cos(\Omega_1z)                    & z < H,    \\
-		\cos(H\Omega_1)e^{\Omega_2(H-z)} & z \geq H.
+		\cos(\Omega_1z)                  & L < z < 0,    \\
+		\cos(L\Omega_1)e^{\Omega_2(L+z)} & z \leq L,
 	\end{cases}
+	\qquad
+	u_t(x,z,0) = -Akv\tan(kx)u(x,z,0),
 \]
 where $k$ is the wavenumber, $L\in(0,H)$, and $\Omega_1,\Omega_2\in[0,k]$ are chosen such that $u$ and $u_z$ are continuous.
-This initial condition follows from this solution of our modified linear wave equation
+This initial condition comes from the following solution to our modified linear wave equation
 \[
 	u(x,z,t) = ae^{ik(x-vt)}
 	\begin{cases}
-		\cos(\Omega_1z)                    & z < H,    \\
-		\cos(H\Omega_1)e^{\Omega_2(H-z)} & z \geq H.
+		\cos(\Omega_1z)                  & L < z < 0,    \\
+		\cos(L\Omega_1)e^{\Omega_2(L+z)} & z \leq L.
 	\end{cases}
 \]
-where $\Omega_1 = k\sqrt{(v/c_1)^2-1}$ and $\Omega_2 = k\sqrt{1-(v/c_1)^2}$. One can derive this solution by applying
-the anzats $u(x,z,t) = f(z)e^{ik(x-vt)}$, assuming $f(\infty) = 0$, $f'(0)=0$, and enforcing continuity of $u$.
-Enforcing continuity of $u_z$ implies $\Omega_2 = \Omega_1\tan(\Omega_1L)$, which allows us to solve for the value
-of $v\in[c_1, c_2]$. Using periodic boundary conditions on the left and right edges of the solution domain
-best represents the assumed infinite domain of this solution. To satisfy the boundary condition at the bottom,
-$L$ must be large enough to ensure $u(x,-L,t)\approx0$.
+where $\Omega_1 = k\sqrt{(v/c_1)^2-1}$ and $\Omega_2 = k\sqrt{1-(v/c_2)^2}$. One can derive this solution by applying
+the anzats $u(x,z,t) = f(z)e^{ik(x-vt)}$ for some continuous $f$ such that $f(\infty) = 0$ and $f'(0)=0$.
+Enforcing continuity of $u_z$ implies $\Omega_2 = \Omega_1\tan(\Omega_1L)$, which determines a value for
+$v\in[c_1,c_2]$. Using periodic boundary conditions on the left and right edges of the solution domain
+best represents the assumed infinite domain of this solution. To approximately satisfy the boundary condition
+at the bottom, $L$ must be large enough to ensure $u(x,-L,t)\approx0$.
 
+Figures \ref{fig:manufacturedLove}, \ref{fig:manufactured1Dwaves}, and \ref{fig:manufactured1Dspeeds} show the evolution
+of this system until the periodic boundary condition cause the system to repeat itself. The wave travels left with an
+approximately constant velocity equal to $v$. The solution does not evolve beyond this state. Figure \ref{fig:manufactured1Dspeeds}
+shows an approximation of the wave speed along the interface and top of the domain. This is computed by approximating each
+local maximum of $u(x,0,t)$ and $u(x,-L,t)$ along the $x$ dimension for each time step of the simulation.
+There are some numerical apparitions in Figure \ref{fig:manufactured1Dspeeds} because the program can struggle to track
+the wave's peak. These numerical apparitions become less apparent as $h$ decreases.
 
+\begin{figure}[htbp]
+	\caption{Plots of $u(x,z,t)$ after enforcing the conditions specified in Section \ref{sec:numerical_manufactured}}
+	\label{fig:manufacturedLove}
+	\includegraphics[width=\linewidth]{figures/manufactured_love/overhead}
+\footnotesize
+\centering
 
+Face one, on top, is fully opaque. Face two represents the infinite half space and is slightly transparent. The wave speed in face one is $c_1$ and the wave speed in face two is $c_2$. The parameters are $c_1 = 0.5$, $c_2 = 1$, $v=0.56115873910026276$, $W=2\pi$, $L=8$, $A=H=1$, $k=2$, and $h = 0.02$.
+\end{figure}
 
+\begin{figure}[htbp]
+	\caption{Plots of $u(x,z,t)$ from Figure \ref{fig:manufacturedLove} along the top and interface of the domain}
+	\label{fig:manufactured1Dwaves}
+	\includegraphics[width=\linewidth]{figures/manufactured_love/u_inter_boundary}
+\footnotesize
+\centering
+\end{figure}
 
+\begin{figure}[htbp]
+	\caption{Speed of $u$ along the interface and boundary from Figure \ref{fig:manufacturedLove}}
+	\label{fig:manufactured1Dspeeds}
+	\includegraphics[width=0.8\linewidth]{figures/manufactured_love/wavespeeds}
+\footnotesize
+\centering
+
+Note: The Love wave speed is roughly constant and equal to $v\approx0.56$. There are some
+numerical apparitions because the program tracks the wave's peak poorly. These numerical apparitions
+become less apparent as $h$ decreases.
+\end{figure}
 
 
 
 
 
 \subsection{Gaussian Explosion}
-Gaussian explosion centered at $(x_0,z_0)$ initial condition.
+A more realistic initial condition would be some type of explosion causing a sudden displacement in the $y$
+direction. We can model this situation by taking $u(x,z,0)$ to be a $2$D Gaussian centered at $(0,z_0)$ with
+standard deviation $r$. So, use the initial condition
 \[
-	u(x,z,0) \sim e^{(x-x_0)^2+(z-z_0)^2}.
+	u(x,z,0) = A\exp\left(-\frac{x^2+(z-z_0)^2}{r^2}\right), \quad u_t(x,z,0) = 0.
 \]
-The left, right, and bottom boundaries are modeled as rigid walls, but the
-rectangle is made large enough such that the waves do not reflect off the boundaries.
+In the simulation, we represent the left, right, and bottom boundaries of the domain as rigid walls, but
+we set $W,L$ large enough such that the waves do not reflect off the boundaries.
 
-Wave speed at the interface is the same as where the explosion started.
-Shock waves from the boundary eventually increase the wave speed.
+Figures \ref{fig:gaussian_below_c1c2}, \ref{fig:gaussian_above_c1c2}, \ref{fig:gaussian_below_c2c1}, and \ref{fig:gaussian_above_c2c1}
+show the evolution of the system from a top down perspective. Observe that whenever the wave crosses the interface there are always
+shock waves travelling in the opposite direction. The first few shock waves have large amplitudes. The later shock waves
+result in rippling patterns.
+
+If the wave speed at the interface is between $c_1$ and $c_2$, then the simulation has produced Love waves 
+In this setting, we only see $v$ strictly between $c_1$ and $c_2$ when the explosion takes place
+below the interface and $c_1>c_2$. This is somewhat peculiar because the wave speed condition is the opposite of
+the condition above.
+
+Figures \ref{fig:gaussian_below_c1c2_speed} and \ref{fig:gaussian_above_c1c2_speed} show that if
+$c_1<c_2$, then the wave speed along the top and interface is initially the same as the layer the explosion comes
+from. In Figure \ref{fig:gaussian_above_c1c2_speed}, a shockwave eventually becomes the outermost wave, so the
+wave speed suddenly becomes much faster. Figure \ref{fig:gaussian_below_c2c1_speed} shows that if $c_2<c_1$ and
+the explosion occurs below the interface then the outermost wave travelling along the interface initially has 
+speed between $c_1$ and $c_2$ until a shockwave becomes the outermost wave instead. Figure \ref{fig:gaussian_above_c2c1_speed}
+shows that when the explosion occurs above the interface and $c_2<c_1$ then the outmost wave travelling along the
+top and interface always has speed $c_1$.
+
+\begin{figure}[htbp]
+	\caption{Plots of $u(x,z,t)$ with $c_1<c_2$ after a Gaussian explosion centered in the lower half-space}
+	\label{fig:gaussian_below_c1c2}
+	\includegraphics[width=\linewidth]{figures/gaussian_below_c1c2/overhead}
+	\includegraphics[width=\linewidth]{figures/gaussian_below_c1c2/u_inter_boundary}
+\footnotesize
+\centering
+
+The wave speed in face one is $c_1$ and the wave speed in face two is $c_2$. The parameters are $c_1 = 0.1$, $c_2 = 0.2$, $A=1$, $H=0.5$, and $h = 0.02$.
+\end{figure}
+
+\begin{figure}[htbp]
+	\caption{Speed of $u$ along the interface and boundary from Figure \ref{fig:gaussian_below_c1c2}}
+	\label{fig:gaussian_below_c1c2_speed}
+	\includegraphics[width=\linewidth]{figures/gaussian_below_c1c2/wavespeeds}
+\footnotesize
+\centering
+
+\end{figure}
 
 
 
+\begin{figure}[htbp]
+	\caption{Plots of $u(x,z,t)$ with $c_1<c_2$ after a Gaussian explosion centered in the upper layer}
+	\label{fig:gaussian_above_c1c2}
+	\includegraphics[width=\linewidth]{figures/gaussian_above_c1c2/overhead}
+	\includegraphics[width=\linewidth]{figures/gaussian_above_c1c2/u_inter_boundary}
+\footnotesize
+\centering
+
+The parameters are $c_1 = 0.1$, $c_2 = 0.2$, $A=1$, $H=0.5$, and $h = 0.02$. \textcolor{orange}{from Shawn: I don't think the 1D waves are insightful in this case}
+\end{figure}
+
+\begin{figure}[htbp]
+	\caption{Speed of $u$ along the interface and boundary from Figure \ref{fig:gaussian_above_c1c2}}
+	\label{fig:gaussian_above_c1c2_speed}
+	\includegraphics[width=\linewidth]{figures/gaussian_above_c1c2/wavespeeds}
+\footnotesize
+\centering
+
+The outermost wave at the interface suddenly moves at speed $c_2$ around $t=11$ because that is when the initial wave is overtaken by a shock wave from the top.
+\end{figure}
+
+
+\begin{figure}[htbp]
+	\caption{Plots of $u(x,z,t)$ with $c_1>c_2$ after a Gaussian explosion centered in the lower half-space}
+	\label{fig:gaussian_below_c2c1}
+	\includegraphics[width=\linewidth]{figures/gaussian_below_c2c1/overhead}
+	\includegraphics[width=\linewidth]{figures/gaussian_below_c2c1/u_inter_boundary}
+\footnotesize
+\centering
+
+The parameters are $c_1 = 0.2$, $c_2 = 0.1$, $A=1$, $H=0.5$, and $h = 0.02$.
+\end{figure}
+
+\begin{figure}[htbp]
+	\caption{Speed of $u$ along the interface and boundary from Figure \ref{fig:gaussian_below_c2c1}}
+	\label{fig:gaussian_below_c2c1_speed}
+	\includegraphics[width=\linewidth]{figures/gaussian_below_c2c1/wavespeeds}
+\footnotesize
+\centering
+
+\end{figure}
+
+
+\begin{figure}[htbp]
+	\caption{Plots of $u(x,z,t)$ with $c_1>c_2$ after a Gaussian explosion centered in the upper layer}
+	\label{fig:gaussian_above_c2c1}
+	\includegraphics[width=\linewidth]{figures/gaussian_above_c2c1/overhead}
+	\includegraphics[width=\linewidth]{figures/gaussian_above_c2c1/u_inter_boundary}
+\footnotesize
+\centering
+
+The parameters are $c_1 = 0.2$, $c_2 = 0.1$, $A=1$, $H=0.5$, and $h = 0.02$.
+\end{figure}
+
+\begin{figure}[htbp]
+	\caption{Speed of $u$ along the interface and boundary from Figure \ref{fig:gaussian_above_c2c1}}
+	\label{fig:gaussian_above_c2c1_speed}
+	\includegraphics[width=\linewidth]{figures/gaussian_above_c2c1/wavespeeds}
+\footnotesize
+\centering
+
+\end{figure}
 
 
 
