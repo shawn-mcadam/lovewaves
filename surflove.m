@@ -6,19 +6,19 @@ lin = @(y,a,b,L) a + (b-a)*y/L;
 patchf = @(f,y,a,b,L) (y < 0).*f(0,a,b,L) + (y >= 0).*f(y,a,b,L);
 % --------------- c_2 = 2c_1, explosion in bottom -----------------------
 par1.rboom = 1/16;
-par1.boom_depth = -0.3;
+par1.boom_depth = -0.1;
 par1.amp = 1;
 par1.initf = ...
     @(x,y) par1.amp*exp(-(x.^2 + (y-par1.boom_depth).^2)/par1.rboom^2);
 par1.initfp = @(x,y) 0;
 par1.speeds = [0.1, 0.2]; % top is face 1, bottom is face 2
 par1.speedf = @(y) heavi(y, par1.speeds(1)^2, par1.speeds(2)^2);
-par1.tfinal = 17.5;
-par1.depth1 = 0.5; % depth of the interface
+par1.tfinal = 10;
+par1.depth1 = 0.15; % depth of the interface
 par1.depth2 = par1.speeds(2)*par1.tfinal - par1.boom_depth; % size of the second domain
 par1.width  = 2*max(par1.speeds)*par1.tfinal+0.5;
 par1.reltol = 1.0e-3; par1.abstol = 1.0e-6; % time tolerances
-par1.step = 0.005; % refinement in space
+par1.step = 0.0035; % refinement in space
 par1.nonlinearity = @(x) 0;
 
 % --------------- c_2 = 2c_1, explosion in top ----------------------
@@ -73,7 +73,7 @@ par4.step = 0.005; % refinement in space
 par4.nonlinearity = @(x) 0;
 
 disp("Using the following parameters")
-par = par1
+par = par2
 tic
 [t,x,y,u] = lovewave( ...
     par.speedf, ...
@@ -97,7 +97,7 @@ min_prom = 0.001;
 
 % Track the maximum of a spline of u on the interface and top of the domain
 finterp = @(x,y,xs) spline(x,y,xs);
-xref = linspace(x(1),x(end),50*length(x)); % refined xinputs
+xref = linspace(x(1),x(end),100*length(x)); % refined xinputs
 peak_top   = zeros(1,length(t));
 peak_inter = zeros(1,length(t));
 for ii = 1:length(t)
@@ -165,9 +165,9 @@ end
 figure
 formatSpec = '%.2f';
 set(gcf,'Position',[450 458 650 450])
-Nfigures = 9;
+Nfigures = 6;
 times = floor(linspace(1,length(t),Nfigures));
-tiled_guy = tiledlayout(sqrt(Nfigures),sqrt(Nfigures),'TileSpacing','Compact','Padding','Compact');
+tiled_guy = tiledlayout(2,Nfigures/2,'TileSpacing','Compact','Padding','Compact');
 for k = times
     nexttile
     surf(x,y(1:Ninter),squeeze(u(k,1:Ninter,:)),EdgeColor='none');
@@ -186,49 +186,50 @@ ylabel(tiled_guy,"z")
 
 
 delete overhead.jpg
-print('overhead.eps','-depsc2','-r450');
+print('overhead.eps','-depsc2','-r500');
+
 
 %% 1D waves
-figure;
-formatSpec = '%.2f';
-Nfigures = 8;
-times = floor(linspace(1,length(t),Nfigures+1)); times(1)=[];
-set(gcf,'Position',[450 458 800 420])
-tiled_guy = tiledlayout(4,Nfigures/2,'TileSpacing','Compact','Padding','Compact');
-for k = times(1:Nfigures/2)
-    nexttile
-    plot(x,utop(k,:)); hold on
-    title("t = " + num2str(t(k),formatSpec));
-    ylim([-par.amp/10,par.amp/8])
-    if (k==times(1)), ylabel("z = top of domain"), end
-end
-
-for k = times(1:Nfigures/2)
-    nexttile
-    plot(x,uinter(k,:)); hold on
-    ylim([-par.amp/14,par.amp/10])
-    if (k==times(1)), ylabel("z = interface"), end
-end
-for k = times(Nfigures/2+1:end)
-    nexttile
-    plot(x,utop(k,:)); hold on
-    title("t = " + num2str(t(k),formatSpec));
-    ylim([-par.amp/10,par.amp/8])
-    if (k==times(Nfigures/2+1)), ylabel("z = top of domain"), end
-end
-
-for k = times(Nfigures/2+1:end)
-    nexttile
-    plot(x,uinter(k,:)); hold on
-    ylim([-par.amp/14,par.amp/10])
-    if (k==times(Nfigures/2+1)), ylabel("z = interface"), end
-end
+%figure;
+%formatSpec = '%.2f';
+%Nfigures = 8;
+%times = floor(linspace(1,length(t),Nfigures+1)); times(1)=[];
+%set(gcf,'Position',[450 458 800 420])
+%tiled_guy = tiledlayout(4,Nfigures/2,'TileSpacing','Compact','Padding','Compact');
+%for k = times(1:Nfigures/2)
+    %nexttile
+    %plot(x,utop(k,:)); hold on
+    %title("t = " + num2str(t(k),formatSpec));
+    %ylim([-par.amp/10,par.amp/8])
+    %if (k==times(1)), ylabel("z = top of domain"), end
+%end
+%
+%for k = times(1:Nfigures/2)
+    %nexttile
+    %plot(x,uinter(k,:)); hold on
+    %ylim([-par.amp/14,par.amp/10])
+    %if (k==times(1)), ylabel("z = interface"), end
+%end
+%for k = times(Nfigures/2+1:end)
+    %nexttile
+    %plot(x,utop(k,:)); hold on
+    %title("t = " + num2str(t(k),formatSpec));
+    %ylim([-par.amp/10,par.amp/8])
+    %if (k==times(Nfigures/2+1)), ylabel("z = top of domain"), end
+%end
+%
+%for k = times(Nfigures/2+1:end)
+    %nexttile
+    %plot(x,uinter(k,:)); hold on
+    %ylim([-par.amp/14,par.amp/10])
+    %if (k==times(Nfigures/2+1)), ylabel("z = interface"), end
+%end
 % title(tiled_guy,  "u(x,z,t) for z at the upper boundary and interface")
-xlabel(tiled_guy, "x")
-ylabel(tiled_guy, "u(x,z,t)")
-
-delete u_inter_boundary.eps
-print('u_inter_boundary.eps','-depsc2');
+%xlabel(tiled_guy, "x")
+%ylabel(tiled_guy, "u(x,z,t)")
+%
+%delete u_inter_boundary.eps
+%print('u_inter_boundary.eps','-depsc2');
 
 %% plot wave speed on the top and interface over time
 tee = [t(2),t(end)];
