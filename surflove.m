@@ -18,7 +18,7 @@ par1.depth1 = 0.5; % depth of the interface
 par1.depth2 = par1.speeds(2)*par1.tfinal - par1.boom_depth; % size of the second domain
 par1.width  = 2*max(par1.speeds)*par1.tfinal+0.5;
 par1.reltol = 1.0e-3; par1.abstol = 1.0e-6; % time tolerances
-par1.step = 0.02; % refinement in space
+par1.step = 0.005; % refinement in space
 par1.nonlinearity = @(x) 0;
 
 % --------------- c_2 = 2c_1, explosion in top ----------------------
@@ -35,7 +35,7 @@ par2.depth1 = 0.5; % depth of the interface
 par2.depth2 = par2.speeds(2)*par2.tfinal - (par2.speeds(1)/par2.speeds(2))*par2.boom_depth; % size of the second domain
 par2.width  = 2*max(par2.speeds)*par2.tfinal;
 par2.reltol = 1.0e-3; par2.abstol = 1.0e-6; % time tolerances
-par2.step = 0.02; % refinement in space
+par2.step = 0.005; % refinement in space
 par2.nonlinearity = @(x) 0;
 
 % --------------- c_1 = 2c_2, explosion in bottom ----------------------
@@ -52,7 +52,7 @@ par3.depth1 = 0.5; % depth of the interface
 par3.depth2 = par3.speeds(2)*par3.tfinal - par3.boom_depth; % size of the second domain
 par3.width  = 2*max(par3.speeds)*par3.tfinal;
 par3.reltol = 1.0e-3; par3.abstol = 1.0e-6; % time tolerances
-par3.step = 0.02; % refinement in space
+par3.step = 0.005; % refinement in space
 par3.nonlinearity = @(x) 0;
 
 % --------------- c_1 = 2c_2, explosion in top ----------------------
@@ -69,11 +69,12 @@ par4.depth1 = 0.5; % depth of the interface
 par4.depth2 = par4.speeds(2)*par4.tfinal - (par2.speeds(1)/par2.speeds(2))*par4.boom_depth; % size of the second domain
 par4.width  = 2*max(par4.speeds)*par4.tfinal+0.5;
 par4.reltol = 1.0e-3; par4.abstol = 1.0e-6; % time tolerances
-par4.step = 0.02; % refinement in space
+par4.step = 0.005; % refinement in space
 par4.nonlinearity = @(x) 0;
 
+disp("Using the following parameters")
+par = par1
 tic
-par = par1;
 [t,x,y,u] = lovewave( ...
     par.speedf, ...
     par.tfinal, ...
@@ -96,7 +97,7 @@ min_prom = 0.001;
 
 % Track the maximum of a spline of u on the interface and top of the domain
 finterp = @(x,y,xs) spline(x,y,xs);
-xref = linspace(x(1),x(end),750*length(x)); % refined xinputs
+xref = linspace(x(1),x(end),50*length(x)); % refined xinputs
 peak_top   = zeros(1,length(t));
 peak_inter = zeros(1,length(t));
 for ii = 1:length(t)
