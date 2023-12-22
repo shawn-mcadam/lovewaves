@@ -169,8 +169,9 @@ xlabel(tiled_guy,"x")
 ylabel(tiled_guy,"z")
 
 
-% delete overhead.jpg
-% print('overhead.eps','-depsc2','-r500');
+delete overhead.jpg
+print('overhead.eps','-depsc2','-r500');
+pause(1)
 
 
 %% 1D waves
