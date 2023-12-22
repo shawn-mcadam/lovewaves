@@ -14,6 +14,7 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{xcolor} % added by Shawn
+\usepackage{tikz}
 
 \DeclareGraphicsExtensions{.pdf,.png,.jpg,.eps}
 \usepackage{mathtools}
@@ -277,13 +278,119 @@ The present contribution is concerned with the study of the general linear and n
 
 
 
---**** lit review: apps of hyper/ visco elast to lots of things - prev refs
+%--**** lit review: apps of hyper/ visco elast to lots of things - prev refs
 
-%\newpage
+
+\section{Linear theory of Love waves}
+Consider in two-dimensional space spanned by $x,z$ an isotropic layer overlying an isotropic elastic half-space and a
+displacement $u = u(x,z,t)$ perpendicular to this space. This situation is illustrated in Figure \ref{fig:setup}.
+Suppose the displacement $u$ satisfies the linear wave equation $u_{tt}=c^2\nabla^2u = c^2\left(u_{xx} + u_{yy}\right)$
+for all times, where subscripts denote partial differentiation where appropriate. The wave speed $c$ depends on the medium,
+so we take $c$ to be a step function in $z$. Let $c(z) = c_1$ for $0 < z < L$ and $c(z) = c_2$ for $L \leq z$, where $L$
+is the height of the upper layer. Energy cannot escape through the top of the domain so $u_z(x,0,t) = 0$. This displacement
+must be bounded as $z\to\infty$, so $u_z(x,\infty,t) = 0$ as well.
+
+\begin{figure}[htbp]
+	\caption{An isotropic layer overlying an isotropic elastic half-space}
+	\label{fig:setup}
+\begin{tikzpicture}
+\draw[help lines, color=gray!30, dashed] (-3.9,-1.9) grid (4.9,2.9);
+\draw[->,ultra thick] (-5.75,3.5)--(-4.5,3.5) node[right]{$+x$};
+\draw[->,ultra thick] (-5.5,3.75)--(-5.5,2.5) node[below]{$+z$};
+\draw[-, ultra thick] (-5,3)--(5,3);
+\draw[-, ultra thick] (-5,1)--(5,1);
+\node (n1) at (0,2) {Medium $1$};
+\node (n2) at (0,0) {Medium $2$};
+\node (n3) at (4,3.25) {$z=0$};
+\node (n3) at (4,1.25) {$z=L$};
+\node (n3) at (0,3.5) {$\partial u/\partial z|_{z=0} = 0$};
+\node (n3) at (0,-1.5)  {$u(x,\infty,t)=0$};
+
+\end{tikzpicture}
+\footnotesize
+\centering
+
+The positive $z$ direction is oriented downwards, and the $y$ direction is. $L$ is the depth of the isotropic layer.
+Waves travelling through medium $1$ have speed $c_1^2$, and waves travelling through medium $2$
+have speed $c_2^2$.
+
+\end{figure}
+
+For any fixed $z$, a Love wave travelling along the $x$ direction will satisfy the travelling
+wave equation
+\[
+	u(x,z,t) = f(z)e^{ik(x-vt)}
+\]
+where $k$ is the wavenumber, $v$ is the wave's velocity, and $f$ is some continuously differentiable
+function. Plugging this expression into the linear wave equation described above implies
+\[
+	f''(z) = \begin{cases}
+		k^2(1-(v/c_1)^2)f(z) & \text{if } L < z < 0, \\
+		k^2(1-(v/c_2)^2)f(z) & \text{otherwise.}
+	\end{cases}
+\]
+The only continuously differentiable solution to this equation satisfying $f'(0) = 0$ and $f(\infty)=0$ is
+\begin{equation}
+	f(z) = \alpha
+	\begin{cases}
+		\cos(\Omega_1z)                  & L < z < 0,    \\
+		\cos(L\Omega_1)e^{\Omega_2(L+z)} & z \leq L.
+	\end{cases}
+\end{equation}
+where $\alpha\in\C$, $\Omega_1 = k\sqrt{(v/c_1)^2-1}$, $\Omega_2 = k\sqrt{1-(v/c_2)^2}$, and 
+\begin{equation}
+	\label{eqn:condition}
+	\Omega_2 = \Omega_1\tan(\Omega_1L).
+\end{equation}
+$\Omega_2$ is a nonnegative real number because otherwise $f(\infty)\neq0$, and $\Omega_1$ is a nonnegative real
+number because otherwise equation \eqref{eqn:condition} has no solution. $\Omega_1,\Omega_2\in\R$ implies
+$c_1 \leq v \leq c_2$. Equation \eqref{eqn:condition} is an implicit solution for $v$, which is possibly multiple
+valued depending on $H$, $k$, $c_1$, and $c_2$. Figure TODO plots both sides of \eqref{eqn:condition} in a case where
+there are multiple solutions for $v$, Figure TODO plots the smallest solution for $(v-c_1)/c_1$ against
+$(c_2-c_1)/c_1$, and Figure TODO is a plot of $u(x,z,t)$ for various $v$. The smallest solution for $v$
+appears to be the most realistic.
+
+
+
+
+%We can manufacture Love waves by using the initial condition
+%\[
+%	u(x,z,0) = A\cos(kx)
+%	\begin{cases}
+%		\cos(\Omega_1z)                  & L < z < 0,    \\
+%		\cos(L\Omega_1)e^{\Omega_2(L+z)} & z \leq L,
+%	\end{cases}
+%	\qquad
+%	u_t(x,z,0) = -Akv\tan(kx)u(x,z,0),
+%\]
+%$L\in(0,H)$, and $\Omega_1,\Omega_2\in[0,k]$ are chosen such that $u$ and $u_z$ are continuous.
+%This initial condition comes from the following solution to our modified linear wave equation
+%\[
+%	u(x,z,t) = ae^{ik(x-vt)}
+%	\begin{cases}
+%		\cos(\Omega_1z)                  & L < z < 0,    \\
+%		\cos(L\Omega_1)e^{\Omega_2(L+z)} & z \leq L.
+%	\end{cases}
+%\]
+%where $\Omega_1 = k\sqrt{(v/c_1)^2-1}$ and $\Omega_2 = k\sqrt{1-(v/c_2)^2}$. One can derive this solution by applying
+%the anzats $u(x,z,t) = f(z)e^{ik(x-vt)}$ for some continuous $f$ such that $f(\infty) = 0$ and $f'(0)=0$.
+%Enforcing continuity of $u_z$ implies $\Omega_2 = \Omega_1\tan(\Omega_1L)$, which determines a value for
+%$v\in[c_1,c_2]$. Using periodic boundary conditions on the left and right edges of the solution domain
+%best represents the assumed infinite domain of this solution. To approximately satisfy the boundary condition
+%at the bottom, $L$ must be large enough to ensure $u(x,-L,t)\approx0$.
+%
+%Figures \ref{fig:manufacturedLove}, \ref{fig:manufactured1Dwaves}, and \ref{fig:manufactured1Dspeeds} show the evolution
+%of this system until the periodic boundary condition cause the system to repeat itself. The wave travels left with an
+%approximately constant velocity equal to $v$. The solution does not evolve beyond this state. 
+
+
+
+
+
 % ----------------------------------- Basics -------------------------------------------------
 \section{Fully nonlinear three-dimensional wave equations in hyper- and viscoelasticity }   \label{Sec:HyperViscoelasticity}
 
-The fully nonlinear frameworks of hyperelasticity and hyper-viscoelasticity are used to describe the behaviour of media undergoing finite (possibly large), as opposed to infinitesimal, strains that elastic bodies undergo when subjected to external stress. In this section, we briefly recall the notation and the main ingredients of mathematical models in incompressible hyperelasticity required for the presentation of the content of this study (see, e.g., \cite{ciarlet1988mathematical, Marsd, Bower, thesisBader}. Vectors and tensors are indicated with boldface characters; subscripts denote partial differentiation where appropriate (e.g., $\partial p/\partial X=p_X$); summation in repeated indices is assumed where appropriate. We use Cartesian coordinates and flat space metric $g^{ij}=\delta^{ij}$; indices of all tensors will be lowered or raised freely as needed.
+The fully nonlinear frameworks of hyperelasticity and hyper-viscoelasticity are used to describe the behaviour of media undergoing finite (possibly large), as opposed to infinitesimal, strains that elastic bodies undergo when subjected to external stress. In this section, we briefly recall the notation and the main ingredients of mathematical models in incompressible hyperelasticity required for the presentation of the content of this study (see, e.g., \cite{ciarlet1988mathematical, Marsd, Bower, thesisBader}. Vectors and tensors are indicated with boldface characters; summation in repeated indices is assumed where appropriate. We use Cartesian coordinates and flat space metric $g^{ij}=\delta^{ij}$; indices of all tensors will be lowered or raised freely as needed.
 
 \subsection{Hyperelastic materials: equations of motion and constitutive equations}
 
@@ -1112,10 +1219,8 @@ Also putting $\eta=0$ in (\ref{262}) yields (\ref{Y15}).
 
 %TODO illustrate the domain. Label the top and bottom spaces.
 
-We can numerically classify when love waves appear by applying the method of lines to a modified version of the linear
-wave equation $u_{tt}=c^2\nabla^2u$ over a discritized rectangular domain. To model an isotropic layer overlying an
-isotropic elastic half-space, we can take the wave speed to be a step function. Let $c(z) = c_1$ in the upper layer,
-and $c(z) = c_2$ in the lower half-space. Discritizing the linear wave equation over $u$'s spacial dimensions with
+We can numerically classify when love waves appear by applying the method of lines to (TODO list out equations for experimentation)
+over a discritized rectangular domain. Discritizing the linear wave equation over $u$'s spacial dimensions with
 second-order divided differences yields this system of second-order ODEs
 \[
 	u_{tt}(x,z,t) = \frac{c(z)^2}{h^2}(u(x+h,z,t) + u(x-h,z,t) + u(x,z+h,t) + u(x,z-h,t) - 4u(x,z,t)).
@@ -1129,69 +1234,36 @@ parallel (see the attached MATLAB code?).
 \subsection{Manufactured Love Waves}
 \label{sec:numerical_manufactured}
 
-We can manufacture Love waves by using the initial condition
-\[
-	u(x,z,0) = A\cos(kx)
-	\begin{cases}
-		\cos(\Omega_1z)                  & L < z < 0,    \\
-		\cos(L\Omega_1)e^{\Omega_2(L+z)} & z \leq L,
-	\end{cases}
-	\qquad
-	u_t(x,z,0) = -Akv\tan(kx)u(x,z,0),
-\]
-where $k$ is the wavenumber, $L\in(0,H)$, and $\Omega_1,\Omega_2\in[0,k]$ are chosen such that $u$ and $u_z$ are continuous.
-This initial condition comes from the following solution to our modified linear wave equation
-\[
-	u(x,z,t) = ae^{ik(x-vt)}
-	\begin{cases}
-		\cos(\Omega_1z)                  & L < z < 0,    \\
-		\cos(L\Omega_1)e^{\Omega_2(L+z)} & z \leq L.
-	\end{cases}
-\]
-where $\Omega_1 = k\sqrt{(v/c_1)^2-1}$ and $\Omega_2 = k\sqrt{1-(v/c_2)^2}$. One can derive this solution by applying
-the anzats $u(x,z,t) = f(z)e^{ik(x-vt)}$ for some continuous $f$ such that $f(\infty) = 0$ and $f'(0)=0$.
-Enforcing continuity of $u_z$ implies $\Omega_2 = \Omega_1\tan(\Omega_1L)$, which determines a value for
-$v\in[c_1,c_2]$. Using periodic boundary conditions on the left and right edges of the solution domain
-best represents the assumed infinite domain of this solution. To approximately satisfy the boundary condition
-at the bottom, $L$ must be large enough to ensure $u(x,-L,t)\approx0$.
 
-Figures \ref{fig:manufacturedLove}, \ref{fig:manufactured1Dwaves}, and \ref{fig:manufactured1Dspeeds} show the evolution
-of this system until the periodic boundary condition cause the system to repeat itself. The wave travels left with an
-approximately constant velocity equal to $v$. The solution does not evolve beyond this state. Figure \ref{fig:manufactured1Dspeeds}
-shows an approximation of the wave speed along the interface and top of the domain. This is computed by approximating each
-local maximum of $u(x,0,t)$ and $u(x,-L,t)$ along the $x$ dimension for each time step of the simulation.
-There are some numerical apparitions in Figure \ref{fig:manufactured1Dspeeds} because the program can struggle to track
-the wave's peak. These numerical apparitions become less apparent as $h$ decreases.
-
-\begin{figure}[htbp]
-	\caption{Plots of $u(x,z,t)$ after enforcing the conditions specified in Section \ref{sec:numerical_manufactured}}
-	\label{fig:manufacturedLove}
-	\includegraphics[width=\linewidth]{figures/manufactured_love/overhead}
-\footnotesize
-\centering
-
-Face one, on top, is fully opaque. Face two represents the infinite half space and is slightly transparent. The wave speed in face one is $c_1$ and the wave speed in face two is $c_2$. The parameters are $c_1 = 0.5$, $c_2 = 1$, $v=0.56115873910026276$, $W=2\pi$, $L=8$, $A=H=1$, $k=2$, and $h = 0.02$.
-\end{figure}
-
-\begin{figure}[htbp]
-	\caption{Plots of $u(x,z,t)$ from Figure \ref{fig:manufacturedLove} along the top and interface of the domain}
-	\label{fig:manufactured1Dwaves}
-	\includegraphics[width=\linewidth]{figures/manufactured_love/u_inter_boundary}
-\footnotesize
-\centering
-\end{figure}
-
-\begin{figure}[htbp]
-	\caption{Speed of $u$ along the interface and boundary from Figure \ref{fig:manufacturedLove}}
-	\label{fig:manufactured1Dspeeds}
-	\includegraphics[width=0.8\linewidth]{figures/manufactured_love/wavespeeds}
-\footnotesize
-\centering
-
-Note: The Love wave speed is roughly constant and equal to $v\approx0.56$. There are some
-numerical apparitions because the program tracks the wave's peak poorly. These numerical apparitions
-become less apparent as $h$ decreases.
-\end{figure}
+%\begin{figure}[htbp]
+%	\caption{Plots of $u(x,z,t)$ after enforcing the conditions specified in Section \ref{sec:numerical_manufactured}}
+%	\label{fig:manufacturedLove}
+%	\includegraphics[width=\linewidth]{figures/manufactured_love/overhead}
+%\footnotesize
+%\centering
+%
+%The parameters are $c_1 = 0.5$, $c_2 = 1$, $v=0.56115873910026276$, $W=2\pi$, $L=8$, $A=H=1$, $k=2$, and $h = 0.02$.
+%\end{figure}
+%
+%\begin{figure}[htbp]
+%	\caption{Plots of $u(x,z,t)$ from Figure \ref{fig:manufacturedLove} along the top and interface of the domain}
+%	\label{fig:manufactured1Dwaves}
+%	\includegraphics[width=\linewidth]{figures/manufactured_love/u_inter_boundary}
+%\footnotesize
+%\centering
+%\end{figure}
+%
+%\begin{figure}[htbp]
+%	\caption{Speed of $u$ along the interface and boundary from Figure \ref{fig:manufacturedLove}}
+%	\label{fig:manufactured1Dspeeds}
+%	\includegraphics[width=0.8\linewidth]{figures/manufactured_love/wavespeeds}
+%\footnotesize
+%\centering
+%
+%Note: The Love wave speed is roughly constant and equal to $v\approx0.56$. There are some
+%numerical apparitions because the program tracks the wave's peak poorly. These numerical apparitions
+%become less apparent as $h$ decreases.
+%\end{figure}
 
 
 
@@ -1200,17 +1272,25 @@ become less apparent as $h$ decreases.
 \subsection{Gaussian Explosion}
 A more realistic initial condition would be some type of explosion causing a sudden displacement in the $y$
 direction. We can model this situation by taking $u(x,z,0)$ to be a $2$D Gaussian centered at $(0,z_0)$ with
-standard deviation $r$. So, use the initial condition
+small standard deviation $r$. So, we will use the initial condition
 \[
 	u(x,z,0) = A\exp\left(-\frac{x^2+(z-z_0)^2}{r^2}\right), \quad u_t(x,z,0) = 0.
 \]
-In the simulation, we represent the left, right, and bottom boundaries of the domain as rigid walls, but
-we set $W,L$ large enough such that the waves do not reflect off the boundaries.
+In the simulation, we represent the left, right, and bottom boundaries of the domain as rigid walls; however,
+$W,L$ are made large enough so the waves do not reflect off those boundaries. We compare having the explosion
+take place in the upper layer and lower half-space for $c_1>c_2$ and $c_2>c_1$. 
 
-Figures \ref{fig:gaussian_below_c1c2}, \ref{fig:gaussian_above_c1c2}, \ref{fig:gaussian_below_c2c1}, and \ref{fig:gaussian_above_c2c1}
-show the evolution of the system from a top down perspective. Observe that whenever the wave crosses the interface there are always
-shock waves travelling in the opposite direction. The first few shock waves have large amplitudes. The later shock waves
-result in rippling patterns.
+Figures \ref{fig:gaussian_below_c1c2}, \ref{fig:gaussian_above_c1c2}, and \ref{fig:gaussian_below_c2c1}
+show the evolution of the system from a top down perspective. Observe that whenever the wave crosses the interface
+there are always shock waves travelling in the opposite direction. The first few shock waves have large amplitudes.
+%The later shock waves result in rippling patterns.
+
+Figures \ref{fig:gaussian_below_c1c2_speed}, \ref{fig:gaussian_below_c2c1_speed}, \ref{fig:gaussian_above_c1c2_speed}
+show an approximation of the wave speed along the interface and top of the domain.
+This is computed by approximating each local maximum of $u(x,0,t)$ and $u(x,-L,t)$ along the $x$ dimension for each time
+step of the simulation. There are some numerical apparitions in Figure \ref{fig:manufactured1Dspeeds} because the program
+can struggle to track the wave's peak. These numerical apparitions become less apparent as $h$ decreases.
+
 
 If the wave speed at the interface is between $c_1$ and $c_2$, then the simulation has produced Love waves 
 In this setting, we only see $v$ strictly between $c_1$ and $c_2$ when the explosion takes place
@@ -1229,40 +1309,38 @@ top and interface always has speed $c_1$.
 \begin{figure}[htbp]
 	\caption{Plots of $u(x,z,t)$ with $c_1<c_2$ after a Gaussian explosion centered in the lower half-space}
 	\label{fig:gaussian_below_c1c2}
-	\includegraphics[width=\linewidth]{figures/gaussian_below_c1c2/overhead}
-	\includegraphics[width=\linewidth]{figures/gaussian_below_c1c2/u_inter_boundary}
+	\includegraphics[width=0.7\linewidth]{figures/gaussian_below_c1c2/overhead}
 \footnotesize
 \centering
 
-The wave speed in face one is $c_1$ and the wave speed in face two is $c_2$. The parameters are $c_1 = 0.1$, $c_2 = 0.2$, $A=1$, $H=0.5$, and $h = 0.02$.
+Face one, on top, is fully opaque and its wave speed is $c_1$. Face two represents the infinite half space with speed $c_2$ and is slightly transparent. The wave speed in face one is $c_1$ and the wave speed in face two is $c_2$. The parameters are $c_1 = 0.1$, $c_2 = 0.2$, $A=1$, $H=0.5$, $z_0=?$ and $h = 0.02$.
 \end{figure}
 
 \begin{figure}[htbp]
 	\caption{Speed of $u$ along the interface and boundary from Figure \ref{fig:gaussian_below_c1c2}}
 	\label{fig:gaussian_below_c1c2_speed}
-	\includegraphics[width=\linewidth]{figures/gaussian_below_c1c2/wavespeeds}
+	\includegraphics[width=0.7\linewidth]{figures/gaussian_below_c1c2/wavespeeds}
 \footnotesize
 \centering
 
+In this case, the wave travelling along the interface and boundary moves at the faster speed $c_2$.
 \end{figure}
-
 
 
 \begin{figure}[htbp]
 	\caption{Plots of $u(x,z,t)$ with $c_1<c_2$ after a Gaussian explosion centered in the upper layer}
 	\label{fig:gaussian_above_c1c2}
-	\includegraphics[width=\linewidth]{figures/gaussian_above_c1c2/overhead}
-	\includegraphics[width=\linewidth]{figures/gaussian_above_c1c2/u_inter_boundary}
+	\includegraphics[width=0.7\linewidth]{figures/gaussian_above_c1c2/overhead}
 \footnotesize
 \centering
 
-The parameters are $c_1 = 0.1$, $c_2 = 0.2$, $A=1$, $H=0.5$, and $h = 0.02$. \textcolor{orange}{from Shawn: I don't think the 1D waves are insightful in this case}
+The parameters are $c_1 = 0.1$, $c_2 = 0.2$, $A=1$, $H=0.5$, $z_0=?$, and $h = 0.02$.
 \end{figure}
 
 \begin{figure}[htbp]
 	\caption{Speed of $u$ along the interface and boundary from Figure \ref{fig:gaussian_above_c1c2}}
 	\label{fig:gaussian_above_c1c2_speed}
-	\includegraphics[width=\linewidth]{figures/gaussian_above_c1c2/wavespeeds}
+	\includegraphics[width=0.7\linewidth]{figures/gaussian_above_c1c2/wavespeeds}
 \footnotesize
 \centering
 
@@ -1273,39 +1351,17 @@ The outermost wave at the interface suddenly moves at speed $c_2$ around $t=11$ 
 \begin{figure}[htbp]
 	\caption{Plots of $u(x,z,t)$ with $c_1>c_2$ after a Gaussian explosion centered in the lower half-space}
 	\label{fig:gaussian_below_c2c1}
-	\includegraphics[width=\linewidth]{figures/gaussian_below_c2c1/overhead}
-	\includegraphics[width=\linewidth]{figures/gaussian_below_c2c1/u_inter_boundary}
+	\includegraphics[width=0.7\linewidth]{figures/gaussian_below_c2c1/overhead}
 \footnotesize
 \centering
 
-The parameters are $c_1 = 0.2$, $c_2 = 0.1$, $A=1$, $H=0.5$, and $h = 0.02$.
+The parameters are $c_1 = 0.2$, $c_2 = 0.1$, $A=1$, $H=0.5$, $z_0=?$, and $h = 0.02$.
 \end{figure}
 
 \begin{figure}[htbp]
 	\caption{Speed of $u$ along the interface and boundary from Figure \ref{fig:gaussian_below_c2c1}}
 	\label{fig:gaussian_below_c2c1_speed}
-	\includegraphics[width=\linewidth]{figures/gaussian_below_c2c1/wavespeeds}
-\footnotesize
-\centering
-
-\end{figure}
-
-
-\begin{figure}[htbp]
-	\caption{Plots of $u(x,z,t)$ with $c_1>c_2$ after a Gaussian explosion centered in the upper layer}
-	\label{fig:gaussian_above_c2c1}
-	\includegraphics[width=\linewidth]{figures/gaussian_above_c2c1/overhead}
-	\includegraphics[width=\linewidth]{figures/gaussian_above_c2c1/u_inter_boundary}
-\footnotesize
-\centering
-
-The parameters are $c_1 = 0.2$, $c_2 = 0.1$, $A=1$, $H=0.5$, and $h = 0.02$.
-\end{figure}
-
-\begin{figure}[htbp]
-	\caption{Speed of $u$ along the interface and boundary from Figure \ref{fig:gaussian_above_c2c1}}
-	\label{fig:gaussian_above_c2c1_speed}
-	\includegraphics[width=\linewidth]{figures/gaussian_above_c2c1/wavespeeds}
+	\includegraphics[width=0.7\linewidth]{figures/gaussian_below_c2c1/wavespeeds}
 \footnotesize
 \centering
 
