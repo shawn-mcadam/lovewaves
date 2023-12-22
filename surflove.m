@@ -1,5 +1,6 @@
 clearvars;clc; close all
 do_gifs = 0;
+is_visible = "off";
 
 heavi = @(x,a,b) (a-b)*(x > 0)+b;
 lin = @(y,a,b,L) a + (b-a)*y/L;
@@ -18,7 +19,7 @@ par1.depth1 = 0.15; % depth of the interface
 par1.depth2 = par1.speeds(2)*par1.tfinal - par1.boom_depth; % size of the second domain
 par1.width  = 2*max(par1.speeds)*par1.tfinal+0.35;
 par1.reltol = 1.0e-3; par1.abstol = 1.0e-6; % time tolerances
-par1.step = 0.01; % refinement in space
+par1.step = 0.1; % refinement in space
 par1.nonlinearity = @(x) 0;
 
 % --------------- c_2 = 2c_1, explosion in top ----------------------
@@ -35,7 +36,7 @@ par2.depth1 = 0.3; % depth of the interface
 par2.depth2 = par2.speeds(2)*par2.tfinal - (par2.speeds(1)/par2.speeds(2))*par2.boom_depth; % size of the second domain
 par2.width  = 2*max(par2.speeds)*par2.tfinal;
 par2.reltol = 1.0e-3; par2.abstol = 1.0e-6; % time tolerances
-par2.step = 0.02; % refinement in space
+par2.step = 0.003; % refinement in space
 par2.nonlinearity = @(x) 0;
 
 % --------------- c_1 = 2c_2, explosion in bottom ----------------------
@@ -52,7 +53,7 @@ par3.depth1 = 0.15; % depth of the interface
 par3.depth2 = par3.speeds(2)*par3.tfinal - par3.boom_depth; % size of the second domain
 par3.width  = 2*max(par3.speeds)*par3.tfinal+0.35;
 par3.reltol = 1.0e-3; par3.abstol = 1.0e-6; % time tolerances
-par3.step = 0.01; % refinement in space
+par3.step = 0.003; % refinement in space
 par3.nonlinearity = @(x) 0;
 
 
@@ -146,7 +147,7 @@ end
 end
 
 %% Heatmaps
-figure
+figure("visible",is_visible)
 formatSpec = '%.2f';
 set(gcf,'Position',[450 458 700 370])
 Nfigures = 6;
@@ -169,7 +170,7 @@ xlabel(tiled_guy,"x")
 ylabel(tiled_guy,"z")
 
 
-delete overhead.jpg
+%delete overhead.eps
 print('overhead.eps','-depsc2','-r500');
 pause(1)
 
@@ -220,7 +221,7 @@ pause(1)
 tee = [t(2),t(end)];
 c1 = par.speeds(1)*[1,1]; c2 = par.speeds(2)*[1,1];
 
-figure; tiledlayout(2,1,'TileSpacing','Compact','Padding','Compact');
+figure("visible",is_visible); tiledlayout(2,1,'TileSpacing','Compact','Padding','Compact');
 nexttile
 plot(t(2:end), abs(diff(peak_top)./diff(t')),tee,c1,tee,c2);
 ylim([0,max(par.speeds)+0.3])
@@ -231,6 +232,6 @@ plot(t(2:end), abs(diff(peak_inter)./diff(t')),tee,c1,tee,c2);
 ylim([0,max(par.speeds)+0.3])
 title("Wave speed at interface over time")
 
-delete wavespeeds.eps
+%delete wavespeeds.eps
 print('wavespeeds.eps','-depsc2');
 
