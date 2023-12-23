@@ -19,7 +19,7 @@ par1.depth1 = 0.15; % depth of the interface
 par1.depth2 = par1.speeds(2)*par1.tfinal - par1.boom_depth; % size of the second domain
 par1.width  = 2*max(par1.speeds)*par1.tfinal+0.35;
 par1.reltol = 1.0e-3; par1.abstol = 1.0e-6; % time tolerances
-par1.step = 0.1; % refinement in space
+par1.step = 0.003; % refinement in space
 par1.nonlinearity = @(x) 0;
 
 % --------------- c_2 = 2c_1, explosion in top ----------------------
