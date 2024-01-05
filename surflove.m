@@ -1,5 +1,5 @@
 clearvars;clc; close all
-do_gifs = 1;
+do_gifs = 0;
 is_visible = "off";
 
 heavi = @(x,a,b) (a-b)*(x > 0)+b;
@@ -7,6 +7,7 @@ lin = @(y,a,b,L) a + (b-a)*y/L;
 patchf = @(f,y,a,b,L) (y < 0).*f(0,a,b,L) + (y >= 0).*f(y,a,b,L);
 nonlinearity = 1;
 % --------------- c_2 = 2c_1, explosion in bottom -----------------------
+par1.name = "bottom_c1c2";
 par1.rboom = 1/16;
 par1.boom_depth = -0.1;
 par1.amp = 0.3;
@@ -20,10 +21,11 @@ par1.depth1 = 0.15; % depth of the interface
 par1.depth2 = par1.speeds(2)*par1.tfinal - par1.boom_depth; % size of the second domain
 par1.width  = 2*max(par1.speeds)*par1.tfinal+0.35;
 par1.reltol = 1.0e-3; par1.abstol = 1.0e-6; % time tolerances
-par1.step = 0.01; % refinement in space
+par1.step = 0.03; % refinement in space
 par1.nonlinearity = @(x) nonlinearity;
 
 % --------------- c_2 = 2c_1, explosion in top ----------------------
+par2.name = "top_c1c2";
 par2.rboom = 1/16;
 par2.boom_depth = 0.1;
 par2.amp = 1;
@@ -41,6 +43,7 @@ par2.step = 0.0045; % refinement in space
 par2.nonlinearity = @(x) nonlinearity;
 
 % --------------- c_1 = 2c_2, explosion in bottom ----------------------
+par3.name = "bottom_c2c1";
 par3.rboom = 1/16;
 par3.boom_depth = -0.1;
 par3.amp = 1;
@@ -79,6 +82,13 @@ mindelay = 0.015;
 utop   = u(:,1,:);
 uinter = u(:,Ninter,:);
 min_prom = 0.001;
+
+
+rmdir(par.name,'s')
+mkdir(par.name);
+writematrix(t, par.name + "/t.txt");
+writematrix(x, par.name + "/x.txt");
+writematrix(y, par.name + "/y.txt");
 
 
 % Track the maximum of a spline of u on the interface and top of the domain
@@ -148,32 +158,38 @@ end
 end
 
 %% Heatmaps
-figure("visible",is_visible)
-figure
-formatSpec = '%.2f';
-set(gcf,'Position',[450 458 1000 400])
 Nfigures = 8;
 times = floor(linspace(1,length(t),Nfigures));
-tiled_guy = tiledlayout(2,Nfigures/2,'TileSpacing','tight','Padding','tight');
 for k = times
-    nexttile
-    surf(x,y(1:Ninter),squeeze(u(k,1:Ninter,:)),EdgeColor='none');
-    hold on
-    surf(x,y(Ninter:end),squeeze(u(k,Ninter:end,:)),EdgeColor='none',FaceAlpha=0.8);
-    hold off
-    view(0,90)
-    xlim([x(1),x(end)])
-    ylim([y(end),y(1)])
-    colorbar
-    title("t = " + num2str(t(k),formatSpec));
+    bruh = squeeze(u(k,:,:));
+    save(par.name + "/u_t"+string(k)+".mat", "bruh");
 end
-title(tiled_guy,"Vertical displacement u(x,z,t) over time")
-xlabel(tiled_guy,"x")
-ylabel(tiled_guy,"z")
 
+% figure("visible",is_visible)
+% figure
+% formatSpec = '%.2f';
+% set(gcf,'Position',[450 458 1000 400]);
+% tiled_guy = tiledlayout(2,Nfigures/2,'TileSpacing','tight','Padding','tight');
+% for k = times
+%     nexttile
+%     surf(x,y(1:Ninter),squeeze(u(k,1:Ninter,:)),EdgeColor='none');
+%     hold on
+%     surf(x,y(Ninter:end),squeeze(u(k,Ninter:end,:)),EdgeColor='none',FaceAlpha=0.8);
+%     hold off
+%     view(0,90)
+%     xlim([x(1),x(end)])
+%     ylim([y(end),y(1)])
+%     colorbar
+%     title("t = " + num2str(t(k),formatSpec));
+% end
+% title(tiled_guy,"Vertical displacement u(x,z,t) over time")
+% xlabel(tiled_guy,"x")
+% ylabel(tiled_guy,"z")
+% 
+% 
+% delete overhead.jpg
+% print('overhead.jpg','-djpeg','-r1500');
 
-delete overhead.jpg
-print('overhead.jpg','-djpeg','-r1500');
 
 
 %% 1D waves
@@ -221,5 +237,5 @@ ylim([0,max(par.speeds)+0.3])
 title("Wave speed at interface over time")
 
 %delete wavespeeds.eps
-print('wavespeeds.eps','-depsc2');
+print(par.name + '/wavespeeds.eps','-depsc2');
 
