@@ -19,24 +19,23 @@ U = reshape(U1(:,1:Ny*Nx),[],Ny,Nx);
 function u_ut = f(~,u_ut1)
 % ode23 gives u_ut as a long column vector. This code is far easier to
 % reason with if we reinterpret u_ut as a 3D matrix:
-u_ut1 = reshape(u_ut1,Ny,Nx,2);
+u_ut = reshape(u_ut1,Ny,Nx,2);
 
-u_ut = zeros(Ny,Nx,2);
-u_ut(:,:,1) = u_ut1(:,:,2);
 if(norm(nlin) ~= 0)
     u_ut(2:end-1,2:end-1,2) = speeds.*(1+nlin.*( ...
-        ((u_ut1(3:end,2:end-1,1)-u_ut1(1:end-2,2:end-1,1))/(2*step)).^2 ...
-      + ((u_ut1(2:end-1,3:end,1)-u_ut1(2:end-1,1:end-2,1))/(2*step)).^2 ...
+        ((u_ut(3:end,2:end-1,1)-u_ut(1:end-2,2:end-1,1))/(2*step)).^2 ...
+      + ((u_ut(2:end-1,3:end,1)-u_ut(2:end-1,1:end-2,1))/(2*step)).^2 ...
     )).* ...
-           (u_ut1(3:end,2:end-1,1) + u_ut1(1:end-2,2:end-1,1) ... % x part
-          + u_ut1(2:end-1,3:end,1) + u_ut1(2:end-1,1:end-2,1) ... % y part
-        - 4*u_ut1(2:end-1,2:end-1,1))/step^2;
+           (u_ut(3:end,2:end-1,1) + u_ut(1:end-2,2:end-1,1) ... % x part
+          + u_ut(2:end-1,3:end,1) + u_ut(2:end-1,1:end-2,1) ... % y part
+        - 4*u_ut(2:end-1,2:end-1,1))/step^2;
 else
     u_ut(2:end-1,2:end-1,2) = speeds.* ...
-           (u_ut1(3:end,2:end-1,1) + u_ut1(1:end-2,2:end-1,1) ... % x part
-          + u_ut1(2:end-1,3:end,1) + u_ut1(2:end-1,1:end-2,1) ... % y part
-        - 4*u_ut1(2:end-1,2:end-1,1))/step^2;
+           (u_ut(3:end,2:end-1,1) + u_ut(1:end-2,2:end-1,1) ... % x part
+          + u_ut(2:end-1,3:end,1) + u_ut(2:end-1,1:end-2,1) ... % y part
+        - 4*u_ut(2:end-1,2:end-1,1))/step^2;
 end
+u_ut(:,:,1) = reshape(u_ut1(Ny*Nx+1:end),Ny,Nx);
 
 % Neumann boundary condition on top
 u_ut(1,:,2) = u_ut(2,:,2);
