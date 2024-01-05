@@ -1,14 +1,15 @@
 clearvars;clc; close all
-do_gifs = 0;
+do_gifs = 1;
 is_visible = "off";
 
 heavi = @(x,a,b) (a-b)*(x > 0)+b;
 lin = @(y,a,b,L) a + (b-a)*y/L;
 patchf = @(f,y,a,b,L) (y < 0).*f(0,a,b,L) + (y >= 0).*f(y,a,b,L);
+nonlinearity = 1;
 % --------------- c_2 = 2c_1, explosion in bottom -----------------------
 par1.rboom = 1/16;
 par1.boom_depth = -0.1;
-par1.amp = 1;
+par1.amp = 0.3;
 par1.initf = ...
     @(x,y) par1.amp*exp(-(x.^2 + (y-par1.boom_depth).^2)/par1.rboom^2);
 par1.initfp = @(x,y) 0;
@@ -19,8 +20,8 @@ par1.depth1 = 0.15; % depth of the interface
 par1.depth2 = par1.speeds(2)*par1.tfinal - par1.boom_depth; % size of the second domain
 par1.width  = 2*max(par1.speeds)*par1.tfinal+0.35;
 par1.reltol = 1.0e-3; par1.abstol = 1.0e-6; % time tolerances
-par1.step = 0.0062; % refinement in space
-par1.nonlinearity = @(x) 0;
+par1.step = 0.01; % refinement in space
+par1.nonlinearity = @(x) nonlinearity;
 
 % --------------- c_2 = 2c_1, explosion in top ----------------------
 par2.rboom = 1/16;
@@ -37,7 +38,7 @@ par2.depth2 = par2.speeds(2)*par2.tfinal - (par2.speeds(1)/par2.speeds(2))*par2.
 par2.width  = 2*max(par2.speeds)*par2.tfinal;
 par2.reltol = 1.0e-3; par2.abstol = 1.0e-6; % time tolerances
 par2.step = 0.0045; % refinement in space
-par2.nonlinearity = @(x) 0;
+par2.nonlinearity = @(x) nonlinearity;
 
 % --------------- c_1 = 2c_2, explosion in bottom ----------------------
 par3.rboom = 1/16;
@@ -54,11 +55,11 @@ par3.depth2 = par3.speeds(2)*par3.tfinal - par3.boom_depth; % size of the second
 par3.width  = 2*max(par3.speeds)*par3.tfinal+0.35;
 par3.reltol = 1.0e-3; par3.abstol = 1.0e-6; % time tolerances
 par3.step = 0.004; % refinement in space
-par3.nonlinearity = @(x) 0;
+par3.nonlinearity = @(x) nonlinearity;
 
 
 disp("Using the following parameters")
-par = par3
+par = par1
 tic
 [t,x,y,u] = lovewave( ...
     par.speedf, ...
