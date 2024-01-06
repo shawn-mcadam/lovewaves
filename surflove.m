@@ -63,6 +63,11 @@ par3.nonlinearity = @(x) nonlinearity;
 
 disp("Using the following parameters")
 par = par1
+if exist(par.name,'dir') == 7
+    rmdir(par.name,'s');
+end
+mkdir(par.name);
+save(par.name + "/" + par.name + ".mat", "-struct", "par");
 tic
 [t,x,y,u] = lovewave( ...
     par.speedf, ...
@@ -84,8 +89,7 @@ uinter = u(:,Ninter,:);
 min_prom = 0.001;
 
 
-rmdir(par.name,'s')
-mkdir(par.name);
+
 writematrix(t, par.name + "/t.txt");
 writematrix(x, par.name + "/x.txt");
 writematrix(y, par.name + "/y.txt");
